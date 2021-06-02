@@ -159,7 +159,7 @@ def aggregated(date):
         aggregated = agg(app.config['UPLOAD_FOLDER'], date)
     return aggregated
 
-@app.route('/agg/<date>', methods=['GET'])
+@app.route('/old/agg/<date>', methods=['GET'])
 def old_aggregated(date):
     return old_agg(date)
 
