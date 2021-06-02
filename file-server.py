@@ -77,14 +77,14 @@ def agg(folder, date):
     return aggregated
 
 
-def old_agg(date):
+def old_agg(folder, date):
     column_names=""
     aggregated = ""
     first = True
-    for f in os.listdir(app.config['UPLOAD_FOLDER']):
+    for f in os.listdir(folder):
         if is_txt_from_date(f, date):
             print(f)
-            content = open(app.config['UPLOAD_FOLDER'] + f, "r")
+            content = open(folder + f, "r")
             aggregated_line = ""
             lines = list(content)
             if first:
@@ -161,7 +161,12 @@ def aggregated(date):
 
 @app.route('/old/agg/<date>', methods=['GET'])
 def old_aggregated(date):
-    return old_agg(date)
+    aggregated = ""
+    if os.path.exists(app.config['UPLOAD_FOLDER'] + date):
+        aggregated = old_agg(app.config['UPLOAD_FOLDER'] + date + "/", date)
+    else:
+        aggregated = old_agg(app.config['UPLOAD_FOLDER'], date)
+    return aggregated
 
 @app.route('/folder/<folder>', methods=['GET'])
 def sub_folder(folder):
