@@ -29,33 +29,39 @@ def is_txt_from_date(filename, date):
     return False
 
 def extract_timestamp(filename):
-    is_txt = '.' in filename and \
-        filename.rsplit('.', 1)[1].lower() == 'txt'
-    is_jpg = '.' in filename and \
-        filename.rsplit('.', 1)[1].lower() == 'jpg'
-    if is_txt:
-        true_name = filename.rsplit('.', 1)[0].lower()
-        if '_' in true_name:
-            return true_name.split('_')[1]
-    elif is_jpg:
-        true_name = filename.rsplit('.', 1)[0].lower()
-        if '_' in true_name:
-            return true_name.split('_')[2]
+    try:
+        is_txt = '.' in filename and \
+            filename.rsplit('.', 1)[1].lower() == 'txt'
+        is_jpg = '.' in filename and \
+            filename.rsplit('.', 1)[1].lower() == 'jpg'
+        if is_txt:
+            true_name = filename.rsplit('.', 1)[0].lower()
+            if '_' in true_name:
+                return true_name.split('_')[1]
+        elif is_jpg:
+            true_name = filename.rsplit('.', 1)[0].lower()
+            if '_' in true_name:
+                return true_name.split('_')[2]
+    except:
+        return ""
     return None
 
 def extract_company(filename):
-    is_txt = '.' in filename and \
-        filename.rsplit('.', 1)[1].lower() == 'txt'
-    is_jpg = '.' in filename and \
-        filename.rsplit('.', 1)[1].lower() == 'jpg'
-    if is_txt:
-        true_name = filename.rsplit('.', 1)[0].lower()
-        if '_' in true_name:
-            return true_name.split('_')[2]
-    elif is_jpg:
-        true_name = filename.rsplit('.', 1)[0].lower()
-        if '_' in true_name:
-            return true_name.split('_')[3]
+    try:
+        is_txt = '.' in filename and \
+            filename.rsplit('.', 1)[1].lower() == 'txt'
+        is_jpg = '.' in filename and \
+            filename.rsplit('.', 1)[1].lower() == 'jpg'
+        if is_txt:
+            true_name = filename.rsplit('.', 1)[0].lower()
+            if '_' in true_name:
+                return true_name.split('_')[2]
+        elif is_jpg:
+            true_name = filename.rsplit('.', 1)[0].lower()
+            if '_' in true_name:
+                return true_name.split('_')[3]
+    except:
+        return ""
     return None
 
 def extract_date(filename):
@@ -119,8 +125,8 @@ def old_agg(folder, date):
                     aggregated_line = aggregated_line + line.split(':')[1].strip() + ';'
                 else:
                     aggregated_line = aggregated_line + '--;'
-                aggregated_line = aggregated_line + extract_company(f) + ";"
-                aggregated_line = aggregated_line + extract_timestamp(f) + ";"
+            aggregated_line = aggregated_line + extract_company(f) + ";"
+            aggregated_line = aggregated_line + extract_timestamp(f) + ";"
             aggregated_line = aggregated_line[:-1] + "<br>"
             print(aggregated_line)
             aggregated = aggregated + aggregated_line
