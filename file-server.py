@@ -148,6 +148,28 @@ def index():
  
     return return_html
 
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    # If a post method then handle file upload
+    if 'file' not in request.files:
+        return "file not present in request", 400
+    file = request.files['file']
+
+    if file.filename == '':
+        return "filename empty", 400
+    if file and allowed_file(file.filename):
+        try:
+            filename = file.filename
+            file_date = extract_date(filename)
+            folder_check(app.config['UPLOAD_FOLDER'] + file_date)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'] + file_date, filename))
+            return "success", 200
+        except:
+            print("Save file failed")
+            return "failed", 500
+    return "failed", 400
+
+
 # Aggregate results by date
 # Consider DATE_HOUR.TXT
 @app.route('/agg/<date>', methods=['GET'])
