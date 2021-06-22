@@ -1,5 +1,6 @@
 from flask import Flask, request, url_for, redirect
 import os
+import json
  
 # Files stored in
 UPLOAD_FOLDER = 'static/'
@@ -35,11 +36,26 @@ def extract_timestamp(filename):
     if is_txt:
         true_name = filename.rsplit('.', 1)[0].lower()
         if '_' in true_name:
-            return true_name.split('_')[-1]
+            return true_name.split('_')[1]
     elif is_jpg:
         true_name = filename.rsplit('.', 1)[0].lower()
         if '_' in true_name:
-            return true_name.split('_')[-1]
+            return true_name.split('_')[2]
+    return None
+
+def extract_company(filename):
+    is_txt = '.' in filename and \
+        filename.rsplit('.', 1)[1].lower() == 'txt'
+    is_jpg = '.' in filename and \
+        filename.rsplit('.', 1)[1].lower() == 'jpg'
+    if is_txt:
+        true_name = filename.rsplit('.', 1)[0].lower()
+        if '_' in true_name:
+            return true_name.split('_')[2]
+    elif is_jpg:
+        true_name = filename.rsplit('.', 1)[0].lower()
+        if '_' in true_name:
+            return true_name.split('_')[3]
     return None
 
 def extract_date(filename):
@@ -68,10 +84,13 @@ def agg(folder, date):
             print(f)
             content = open(folder + f, "r")
             lines = list(content)
+            if(lines is None or len(lines) == 0):
+                continue
             line = lines[0]
             if not line.endswith(','):
                 line = line + ','
-            line = line + extract_timestamp(f) + "<br>"
+
+            line = line + extract_company(f) + ',' + extract_timestamp(f) + "<br>"
             print(line)
             aggregated = aggregated + line
     return aggregated
@@ -87,9 +106,12 @@ def old_agg(folder, date):
             content = open(folder + f, "r")
             aggregated_line = ""
             lines = list(content)
+            if(lines is None or len(lines) == 0):
+                continue
             if first:
                 for line in lines:
                     column_names = column_names + line.split(':')[0] + ';'
+                column_names = column_names + "company;timestamp;"
                 first = False
                 column_names = column_names[:-1] + "<br>"
             for line in lines:
@@ -97,6 +119,8 @@ def old_agg(folder, date):
                     aggregated_line = aggregated_line + line.split(':')[1].strip() + ';'
                 else:
                     aggregated_line = aggregated_line + '--;'
+                aggregated_line = aggregated_line + extract_company(f) + ";"
+                aggregated_line = aggregated_line + extract_timestamp(f) + ";"
             aggregated_line = aggregated_line[:-1] + "<br>"
             print(aggregated_line)
             aggregated = aggregated + aggregated_line
@@ -169,6 +193,11 @@ def upload_file():
             return "failed", 500
     return "failed", 400
 
+@app.route('/ingest', methods=['POST'])
+def ingest():
+    received_json_data=json.loads(request.body)
+    print(received_json_data)
+    return received_json_data
 
 # Aggregate results by date
 # Consider DATE_HOUR.TXT
